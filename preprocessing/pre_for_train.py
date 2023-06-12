@@ -39,6 +39,9 @@ def preprocessing_train(x, y,stopwords=None, split=True):
             stopwords = file.read().splitlines()
         
     if split == True:
+        X_data = x
+        y_data = y
+        
         X_train, X_test, y_train, y_test = train_test_split(X_data, y_data, test_size=0.2, random_state=0, stratify=y_data)
         
         print('--------Ratio of Train Data--------')
@@ -49,10 +52,8 @@ def preprocessing_train(x, y,stopwords=None, split=True):
         print(f'Not Interested = {round(y_test.value_counts()[0]/len(y_test) * 100,3)}%')
         print(f'Interested = {round(y_test.value_counts()[1]/len(y_test) * 100,3)}%')
         
-        train_test=[]
-        
-        for data in [X_train, X_test]:
-            data = data.reset_index(drop=True)
+        for X in [X_train, X_test]:
+            data = X.reset_index(drop=True)
             for idx in tqdm(range(len(data))):
                 data[idx] = tokenize(data[idx])
                 data[idx] = combine_tokens(data[idx])
@@ -67,10 +68,12 @@ def preprocessing_train(x, y,stopwords=None, split=True):
             encoded_tokens = tokenizer.texts_to_sequences(data)
             # Padding
             max_len = max(len(item) for item in encoded_tokens)
-            data = pad_sequences(encoded_tokens, maxlen = max_len)
-            train_test.append(data)
-            X_train = train_test[0]
-            X_test = train_test[1]
+            data = pad_sequences(encoded_tokens, maxlen = 21)
+            
+            if X is X_train:
+                X_train = data
+            if X is X_test:
+                X_test = data
 
         return X_train, X_test, y_train, y_test
         
@@ -81,6 +84,8 @@ def preprocessing_train(x, y,stopwords=None, split=True):
         print('--------Ratio of Train Data--------')
         print(f'Not Interested = {round(y_train.value_counts()[0]/len(y_train) * 100,3)}%')
         print(f'Interested = {round(y_train.value_counts()[1]/len(y_train) * 100,3)}%')
+        
+        k=[]
         
         X_train = X_train.reset_index(drop=True)
         for idx in tqdm(range(len(X_train))):
@@ -97,6 +102,6 @@ def preprocessing_train(x, y,stopwords=None, split=True):
         encoded_tokens = tokenizer.texts_to_sequences(X_train)
         # Padding
         max_len = max(len(item) for item in encoded_tokens)
-        X_train = pad_sequences(encoded_tokens, maxlen = max_len)
+        X_train = pad_sequences(encoded_tokens, maxlen = 21)
         
         return X_train, y_train
