@@ -1,8 +1,0 @@
-selenium
-numpy
-pandas
-tqdm
-pyperclip
-tensorflow==2.10.0
-konlpy
-scikit-learn
